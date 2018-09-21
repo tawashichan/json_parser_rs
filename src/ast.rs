@@ -8,5 +8,7 @@ pub enum Json {
     String(String),
     List(Vec<Json>),
     Map(HashMap<String,Json>),
-    Null
+    Null,
+    TRUE,
+    FALSE
 }

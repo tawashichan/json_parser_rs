@@ -12,6 +12,9 @@ pub enum Token {
     RBRACKET,
     COLON,
     COMMA,
+    NULL,
+    TRUE,
+    FALSE,
     EOF
 }
 
@@ -31,6 +34,26 @@ fn get_str_sub(str_vec: &[char],acm: String) -> (String,&[char]) {
             _c => get_str_sub(rest,format!("{}{}",acm,first))
         }
         &[] => (acm,&[]),
+    }
+}
+
+fn get_keyword(str_vec: &[char]) -> (Token, &[char]){
+    get_keyword_sub(str_vec,"".to_string())
+}
+
+fn get_keyword_sub(str_vec: &[char], acm: String) -> (Token, &[char]) {
+    match str_vec {
+        [first, rest..] => if first.is_alphabetic() {
+            get_keyword_sub(rest, format!("{}{}", acm, first))
+        } else {
+            match &*acm {
+                "null" => (Token::NULL, str_vec),
+                "true" => (Token::TRUE, str_vec),
+                "false" => (Token::FALSE, str_vec),
+                _ => panic!("invalid keyword")
+            }
+        }
+        &[] => panic!("invalid tokens")//(acm,&[]),
     }
 }
 
@@ -74,14 +97,14 @@ fn next_token(slice: &[char]) -> (Token, &[char]) {
                         let num = num_str.parse::<i64>().unwrap();
                         (Token::INT(num), re)
                     }
-                } else {
+                } else if *c == '\"' {
                     let (s, re) = get_str(rest);
                     (Token::STRING(s),re)
+                } else {
+                   get_keyword(slice)
                 }
-            _ => (Token::EOF, rest)
         },
-        [] => (Token::EOF, &[]),
-        _ => (Token::EOF, &[])
+        [] => (Token::EOF, &[])
     }
 }
 
@@ -92,7 +115,6 @@ fn get_tokens<'a>(slice: &[char],acm: &'a mut Vec<Token>) -> &'a Vec<Token> {
             acm.push(token);
             get_tokens(slice,acm)
         },//[acm,vec![token]].concat().to_owned()),
-        (_token,_) => acm
     }
 
     //stack over flow避けるなら下の書き方になるが...

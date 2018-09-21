@@ -41,6 +41,9 @@ fn parse_list_sub<'a>(tokens: &'a[Token],acm: &mut HashMap<String,Json>) -> (&'a
         [Token::STRING(s),rest..] => (rest,Json::String(s.to_owned())),
         [Token::FLOAT(f),rest..] => (rest,Json::Float(*f)),
         [Token::LBRACE,rest..] => parse_list_sub(rest,acm),
+        [Token::NULL,rest..] => (rest,Json::Null),
+        [Token::TRUE,rest..] => (rest,Json::TRUE),
+        [Token::FALSE,rest..] => (rest,Json::FALSE),
         [Token::LBRACKET,rest..] => parse_bracket(rest,&mut vec![]),
         _ => (&[],Json::Map(acm.to_owned()))
     }
