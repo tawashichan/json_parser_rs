@@ -15,7 +15,6 @@ pub enum Token {
     EOF
 }
 
-//適当すぎるがとりあえず
 pub fn split_string(s: String) -> Vec<char> {
     s.chars().collect()
 }
@@ -29,7 +28,7 @@ fn get_str_sub(str_vec: &[char],acm: String) -> (String,&[char]) {
     match str_vec {
         [first,rest..] => match first {
             '\"' => (acm,rest),
-            c => get_str_sub(rest,format!("{}{}",acm,first))
+            _c => get_str_sub(rest,format!("{}{}",acm,first))
         }
         &[] => (acm,&[]),
     }
@@ -42,9 +41,9 @@ fn get_num_str(str_vec: &[char]) -> (String, &[char],bool) {
 fn get_num_str_sub(str_vec: &[char], acm: String,is_float: bool) -> (String, &[char],bool) {
     match &str_vec[..] {
         [first,rest..] => {
-            if is_num(first.to_string()) {
-                get_num_str_sub(rest,format!("{}{}",acm,first),is_float)
-            } else if first.to_string() == "." {
+            if first.is_numeric() {
+                get_num_str_sub(rest, format!("{}{}",acm,first),is_float)
+            } else if *first == '.' {
                 get_num_str_sub(rest,format!("{}{}",acm,first),true)
             } else {
                 (acm,str_vec,is_float)
@@ -52,10 +51,6 @@ fn get_num_str_sub(str_vec: &[char], acm: String,is_float: bool) -> (String, &[c
         }
         &[] => (acm, &[],is_float)
     }
-}
-
-fn is_num(s: String) -> bool {
-    s >= "0".to_string() && s <= "9".to_string()
 }
 
 //nightlyじゃないとvectorを分解できない...
@@ -70,7 +65,7 @@ fn next_token(slice: &[char]) -> (Token, &[char]) {
             ':' => (Token::COLON, rest),
             ',' => (Token::COMMA, rest),
             c =>
-                if is_num(c.to_string()) {
+                if c.is_numeric() {
                     let (num_str, re,is_float) = get_num_str(slice);
                     if is_float {
                         let num = num_str.parse::<f64>().unwrap();
@@ -90,16 +85,37 @@ fn next_token(slice: &[char]) -> (Token, &[char]) {
     }
 }
 
-fn get_tokens(slice: &[char],acm: Vec<Token>) -> Vec<Token> {
+fn get_tokens<'a>(slice: &[char],acm: &'a mut Vec<Token>) -> &'a Vec<Token> {
     match next_token(slice) {
         (Token::EOF,_) => acm,
-        (token,slice) => get_tokens(slice,[acm,vec![token]].concat().to_owned()),
-        (token,_) => acm
+        (token,slice) => {
+            acm.push(token);
+            get_tokens(slice,acm)
+        },//[acm,vec![token]].concat().to_owned()),
+        (_token,_) => acm
     }
+
+    //stack over flow避けるなら下の書き方になるが...
+    /*let mut s = slice;
+    while s.len() > 0 {
+        match next_token(s) {
+            (Token::EOF,_) => (),
+            (token,slice) => {
+                s = slice;
+                acm.push(token);
+            },
+            (token,_) => ()
+        }
+    }
+    acm*/
 }
 
-pub fn str_to_tokens(str: String) -> Vec<Token> {
+pub fn str_to_tokens<'a>(str: String) -> Vec<Token> {
     let str_vec = split_string(str);
-    let result = get_tokens(&str_vec,vec![]);
-    result
+    get_tokens(&str_vec,&mut vec![]).to_owned()
 }
+
+
+/*macro_rules! to_json {
+    () => {};
+}*/
