@@ -13,8 +13,7 @@ pub enum Token {
     COLON,
     COMMA,
     NULL,
-    TRUE,
-    FALSE,
+    BOOLEAN(bool),
     EOF
 }
 
@@ -48,9 +47,9 @@ fn get_keyword_sub(str_vec: &[char], acm: String) -> (Token, &[char]) {
         } else {
             match &*acm {
                 "null" => (Token::NULL, str_vec),
-                "true" => (Token::TRUE, str_vec),
-                "false" => (Token::FALSE, str_vec),
-                _ => panic!("invalid keyword")
+                "true" => (Token::BOOLEAN(true), str_vec),
+                "false" => (Token::BOOLEAN(false), str_vec),
+                _ => panic!("invalid keyword: {:?}",acm)
             }
         }
         &[] => panic!("invalid tokens")//(acm,&[]),
@@ -89,7 +88,7 @@ fn next_token(slice: &[char]) -> (Token, &[char]) {
             ',' => (Token::COMMA, rest),
             c =>
                 if c.is_numeric() {
-                    let (num_str, re,is_float) = get_num_str(slice);
+                    let (num_str, re,is_float) = get_num_str(slice); //moveもmutableな参照もしてないからここでslice使える
                     if is_float {
                         let num = num_str.parse::<f64>().unwrap();
                         (Token::FLOAT(num), re)
@@ -114,7 +113,7 @@ fn get_tokens<'a>(slice: &[char],acm: &'a mut Vec<Token>) -> &'a Vec<Token> {
         (token,slice) => {
             acm.push(token);
             get_tokens(slice,acm)
-        },//[acm,vec![token]].concat().to_owned()),
+        },
     }
 
     //stack over flow避けるなら下の書き方になるが...
@@ -137,7 +136,3 @@ pub fn str_to_tokens<'a>(str: String) -> Vec<Token> {
     get_tokens(&str_vec,&mut vec![]).to_owned()
 }
 
-
-/*macro_rules! to_json {
-    () => {};
-}*/
