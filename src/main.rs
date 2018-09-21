@@ -15,7 +15,7 @@ mod json_macro;
 fn main() {
 
 
-    let str = "{\"aaaa\": true,\"hoge\": null,\"tawashi\": {\"aaa\":144.5,\"poyoyo\": [[[[6483]]],[42]]}}".to_string();
+    let str = "{\"aaaa\": false,\"hoge\": null,\"tawashi\": {\"aaa\":144.5,\"poyoyo\": [[[[6483]]],[42]]}}".to_string();
     //let super_long_str = data::test_long_str();
     //let tokens = lexer::str_to_tokens(data::test_long_str());
     let tokens = lexer::str_to_tokens(str);

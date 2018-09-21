@@ -60,6 +60,7 @@ fn get_num_str(str_vec: &[char]) -> (String, &[char],bool) {
     get_num_str_sub(str_vec,"".to_string(),false)
 }
 
+//jsonの仕様的にintとfloatの区別は存在しないっぽいので
 fn get_num_str_sub(str_vec: &[char], acm: String,is_float: bool) -> (String, &[char],bool) {
     match &str_vec[..] {
         [first,rest..] => {

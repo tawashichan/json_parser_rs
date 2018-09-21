@@ -6,7 +6,7 @@ pub enum Json {
     Float(f64),
     String(String),
     List(Vec<Json>),
-    Map(HashMap<String,Json>),
+    Object(HashMap<String,Json>),
     Null,
     Boolean(bool),
 }
