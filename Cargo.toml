@@ -1,0 +1,8 @@
+[package]
+name = "json_parser"
+version = "0.1.0"
+authors = ["irieryota <ryotairie123@gmail.com>"]
+
+[dependencies]
+json_macro = { path = "../json_macro" }
+json_macro_derive = { path = "../json_macro_derive" }

@@ -1,11 +1,10 @@
 use std::collections::HashMap;
 
-#[derive(Debug,Clone)]
+#[derive(Debug,Clone,PartialEq)]
 pub enum Json {
-    Int(i64),
-    Float(f64),
+    Number(f64),
     String(String),
-    List(Vec<Json>),
+    Array(Vec<Json>),
     Object(HashMap<String,Json>),
     Null,
     Boolean(bool),
