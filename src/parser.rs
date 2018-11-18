@@ -158,3 +158,13 @@ fn parse_obj8(){
     assert_eq!(json,Json::Object(map.clone()))
 }
 
+#[test]
+fn parse_obj9(){
+    let tokens = vec![Token::LBRACE,Token::STRING("hoge".to_string()),Token::COLON,Token::STRING("string".to_string()),Token::COMMA,Token::STRING("jiro".to_string()),Token::COLON,Token::BOOLEAN(true),Token::RBRACE];
+    let json = parse_tokens(tokens);
+    let map = &mut HashMap::new();
+    map.insert("jiro".to_string(),Json::Boolean(true));
+    map.insert("hoge".to_string(),Json::String("string".to_string()));
+    assert_eq!(json,Json::Object(map.clone()))
+}
+
