@@ -131,3 +131,24 @@ fn parse_obj6(){
     map.insert("hoge".to_string(),Json::Array(vec![Json::Boolean(false)]));
     assert_eq!(json,Json::Object(map.clone()))
 }
+
+#[test]
+fn parse_obj7(){
+    let tokens = vec![Token::LBRACE,Token::STRING("hoge".to_string()),Token::COLON,Token::LBRACKET,Token::BOOLEAN(false),Token::COMMA,Token::BOOLEAN(true),Token::RBRACKET,Token::RBRACE];
+    let json = parse_tokens(tokens);
+    let map = &mut HashMap::new();
+    map.insert("hoge".to_string(),Json::Array(vec![Json::Boolean(false),Json::Boolean(true)]));
+    assert_eq!(json,Json::Object(map.clone()))
+}
+
+#[test]
+fn parse_obj8(){
+    let tokens = vec![Token::LBRACE,Token::STRING("hoge".to_string()),Token::COLON,Token::LBRACE,Token::STRING("string".to_string()),Token::COLON,Token::BOOLEAN(true),Token::RBRACE,Token::RBRACE];
+    let json = parse_tokens(tokens);
+    let map = &mut HashMap::new();
+    let map2 = &mut HashMap::new();
+    map2.insert("string".to_string(),Json::Boolean(true)); 
+    map.insert("hoge".to_string(),Json::Object(map2.clone()));
+    assert_eq!(json,Json::Object(map.clone()))
+}
+

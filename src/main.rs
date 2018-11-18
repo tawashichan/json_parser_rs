@@ -15,9 +15,9 @@ mod parser;
 
 fn main() {
 
-    let str = "{\"hoge\":[1,2,3]}";
+    let str = "{\"hoge\":{\"aaa\":12}}";
     let tokens = lexer::str_to_tokens(str);
     println!("{:?}",tokens);
     let json = parser::parse_tokens(tokens);
-     println!("{:?}",json);
+    println!("{:?}",json);
 }
