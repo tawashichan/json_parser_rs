@@ -8,15 +8,18 @@ pub fn parse_tokens(tokens: Vec<Token>) -> Json {
 }
 
 fn parse_json(tokens: &[Token]) -> Json {
-    let (_,json) =  match tokens {
-        [Token::LBRACE,_rest..] => parse_list(tokens),
-        [Token::LBRACKET,_rest..] => parse_list(tokens),
+    let (rest,json) =  match tokens {
+        [Token::LBRACE,_rest..] => parse_value(tokens),
+        [Token::LBRACKET,_rest..] => parse_value(tokens),
         _ => panic!("invalid tokens")
     };
+    if rest.len() > 0 {
+        panic!("invalid tokens {:?}",rest)
+    }
     json
 }
 
-fn parse_list<'a>(tokens: &'a[Token]) -> (&'a[Token],Json) {
+fn parse_value<'a>(tokens: &'a[Token]) -> (&'a[Token],Json) {
     match tokens {
         [Token::LBRACE,rest..] => {
             let (res,json) = parse_object(rest,&mut HashMap::new());
@@ -55,9 +58,12 @@ fn parse_list<'a>(tokens: &'a[Token]) -> (&'a[Token],Json) {
 fn parse_object<'a>(tokens: &'a[Token],acm: &mut HashMap<String,Json>) -> (&'a[Token],Json) {
     match tokens {
         [Token::STRING(s),Token::COLON,rest..] => {
-            let (res,json) = parse_list(rest);
+            let (res,json) = parse_value(rest);
             acm.insert(s.clone(),json);
             parse_object(res,acm)
+        }
+        [Token::COMMA,rest..] => {
+            parse_object(rest,acm)
         }
         _ =>  (tokens,Json::Object(acm.clone()))
     }
@@ -67,7 +73,7 @@ fn parse_array<'a>(tokens: &'a[Token],acm: &mut Vec<Json>) -> (&'a[Token],Json) 
     match tokens {
         [Token::RBRACKET,_rest..] => (tokens,Json::Array(acm.clone())),
         _ => {
-            let (rest,json) = parse_list(tokens);
+            let (rest,json) = parse_value(tokens);
             acm.push(json);
             match rest {
                 [Token::COMMA,res..] =>  parse_array(res,acm),

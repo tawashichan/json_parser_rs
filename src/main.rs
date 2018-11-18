@@ -15,7 +15,7 @@ mod parser;
 
 fn main() {
 
-    let str = "{\"hoge\":{\"aaa\":12}}";
+    let str = "{\"hoge\":{\"aaa\":12},\"jiro\": [1,2,3,4]}";
     let tokens = lexer::str_to_tokens(str);
     println!("{:?}",tokens);
     let json = parser::parse_tokens(tokens);
